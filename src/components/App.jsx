@@ -156,7 +156,7 @@ import { ContactsList } from "./Contacts/ContactsList/ContactsList";
 const LOCAL_KEY = "contacts"
 
 export function  App () {
-  const [contacts, setContacts] = useState([
+  const [contacts, setContacts] = useState(loadContactsFromLocalStorage() || [
     { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
     { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
     { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
@@ -214,17 +214,29 @@ SetFilter(evt.target.value);
   }
 
 
+function saveContactsToLocalStorage(contactsFromStore) {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(contactsFromStore));
+  }
+  
+  function loadContactsFromLocalStorage() {
+    const localData = localStorage.getItem(LOCAL_KEY);
+    return localData ? JSON.parse(localData) : [];
+  }
+  
+
+
+
 useEffect(() => {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
+  saveContactsToLocalStorage(contacts);
 },[contacts]);
  
 
 useEffect(() => {
-  const localData = JSON.parse(localStorage.getItem(LOCAL_KEY));
-  if(localData) {
-    setContacts(localData)
-  }
+  const localData = loadContactsFromLocalStorage();
+  setContacts(localData);
 }, []);
+
+
 
   const FilterContacts = contacts.filter(contact =>
         contact.name.toLowerCase().trim().includes(filter?.toLowerCase() || '')
